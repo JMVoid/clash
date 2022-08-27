@@ -206,6 +206,11 @@ func updateProfile(cfg *config.Config) {
 	if profileCfg.StoreSelected {
 		patchSelectGroup(cfg.Proxies)
 	}
+	if profileCfg.UiStorage != "" && config.Store.IsFirstLoad() {
+		log.Infoln("Start initial UI store %s", profileCfg.UiStorage)
+		config.Store.SetFirstLoad(false)
+		config.Store.Initial(profileCfg.UiStorage, C.Path.Config())
+	}
 }
 
 func patchSelectGroup(proxies map[string]C.Proxy) {

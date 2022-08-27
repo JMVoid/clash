@@ -80,8 +80,9 @@ type FallbackFilter struct {
 
 // Profile config
 type Profile struct {
-	StoreSelected bool `yaml:"store-selected"`
-	StoreFakeIP   bool `yaml:"store-fake-ip"`
+	StoreSelected bool   `yaml:"store-selected"`
+	StoreFakeIP   bool   `yaml:"store-fake-ip"`
+	UiStorage     string `yaml:"ui-storage"`
 }
 
 // Experimental config
@@ -156,7 +157,6 @@ func Parse(buf []byte) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return ParseRawConfig(rawCfg)
 }
 
@@ -188,13 +188,16 @@ func UnmarshalRawConfig(buf []byte) (*RawConfig, error) {
 		},
 		Profile: Profile{
 			StoreSelected: true,
+			UiStorage:     "",
 		},
 	}
 
 	if err := yaml.Unmarshal(buf, rawCfg); err != nil {
 		return nil, err
 	}
-
+	if Store.config != nil {
+		rawCfg.Profile.UiStorage = Store.GetConfig().Profile.UiStorage
+	}
 	return rawCfg, nil
 }
 
@@ -236,6 +239,7 @@ func ParseRawConfig(rawCfg *RawConfig) (*Config, error) {
 	config.DNS = dnsCfg
 
 	config.Users = parseAuthentication(rawCfg.Authentication)
+	Store.SetConfig(rawCfg)
 
 	return config, nil
 }
