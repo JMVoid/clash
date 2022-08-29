@@ -9,14 +9,14 @@ import (
 	"net/http"
 )
 
-func profileRouter() http.Handler {
+func primitiveRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", getProfile)
-	r.Put("/", putProfile)
+	r.Get("/", getPrimitive)
+	r.Put("/", putPrimitive)
 	return r
 }
 
-func getProfile(w http.ResponseWriter, r *http.Request) {
+func getPrimitive(w http.ResponseWriter, r *http.Request) {
 	if config.Store.IsFirstLoad() {
 		render.JSON(w, r, render.M{
 			"enable": false,
@@ -30,7 +30,7 @@ func getProfile(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func putProfile(w http.ResponseWriter, r *http.Request) {
+func putPrimitive(w http.ResponseWriter, r *http.Request) {
 	req := updateConfigRequest{}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
@@ -48,14 +48,14 @@ func putProfile(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, newError(err.Error()))
 		return
 	}
-	// need to write
+
 	config.Store.SetConfig(rawCfg)
 	err = config.Store.WriteStore()
 	if err != nil {
 		log.Warnln("fail to write UI Store file %s with %s", config.Store.GetStorePath(), err.Error())
 	}
 	executor.ApplyConfig(cfg, true)
-	log.Infoln("apply updated configuration and write to %s successfully", config.Store.GetStorePath())
+	log.Infoln("Update configuration and write to %s successfully", config.Store.GetStorePath())
 }
 
 func ParsePayLoad(buf []byte) (*config.RawConfig, *config.Config, error) {

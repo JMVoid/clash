@@ -71,15 +71,6 @@ func (s *Storage) SetFirstLoad(load bool) {
 }
 
 func (s *Storage) GetConfig() *RawConfig {
-	//buffer, err := yaml.Marshal(s.config)
-	//if err != nil {
-	//	return fmt.Sprintf("fail to yaml marshal config: %s", err.Error())
-	//}
-	//str, err := json.Marshal(string(buffer))
-	//if err != nil {
-	//	return fmt.Sprintf("fail to json marshal config: %s", err.Error())
-	//}
-	//return str
 	return s.config
 }
 
